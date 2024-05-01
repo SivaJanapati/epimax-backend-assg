@@ -1,57 +1,64 @@
-Backend Documentation
-Introduction
-This document provides an overview of the backend code for an application designed to manage tasks. The backend is built using Express.js and SQLite, with authentication handled using JWT tokens.
+### 1. API Design
 
-Setup and Dependencies
-Express.js: The backend framework used to build the API endpoints.
-SQLite: The lightweight database management system used to store task data.
-bcrypt: A library used for hashing passwords securely.
-jsonwebtoken (JWT): Used for user authentication and generating JWT tokens.
-API Endpoints
-1. /register Endpoint
-Purpose: Allows users to register by creating a new account.
-Method: POST
-Request Body:
-username: The username for the new account.
-password: The password for the new account.
-Response:
-Success: Returns a success message with the newly created user ID.
-Failure: Returns an error message if the username already exists.
-2. /login Endpoint
-Purpose: Handles user login and issues JWT tokens upon successful authentication.
-Method: POST
-Request Body:
-username: The username of the user.
-password: The password of the user.
-Response:
-Success: Returns a JWT token if the login is successful.
-Failure: Returns an error message if the username or password is invalid.
-3. /tasks Endpoints
-Purpose: Provides CRUD operations for managing tasks.
-Authentication: All /tasks endpoints require a valid JWT token for authentication.
-a. GET /tasks
-Purpose: Retrieves a list of all tasks.
-Response: Returns an array of tasks.
-b. GET /tasks/:id
-Purpose: Retrieves details of a specific task by ID.
-Request Parameters: id - The ID of the task.
-Response: Returns details of the specified task.
-c. POST /tasks
-Purpose: Creates a new task.
-Request Body: Contains details of the new task.
-Response: Returns the ID of the newly created task.
-d. PUT /tasks/:id
-Purpose: Updates details of an existing task.
-Request Parameters: id - The ID of the task to update.
-Request Body: Contains updated details of the task.
-Response: Returns a success message upon successful update.
-e. DELETE /tasks/:id
-Purpose: Deletes an existing task.
-Request Parameters: id - The ID of the task to delete.
-Response: Returns a success message upon successful deletion.
-Authentication Middleware
-Purpose: Middleware function to authenticate incoming requests using JWT tokens.
-Usage: Applied to all /tasks endpoints to ensure that only authenticated users can access them.
-Database Initialization
-Purpose: Initializes the SQLite database and starts the Express server.
-Initialization: Opens the database connection and listens for incoming HTTP requests on port 4004.
+**Objective:** Define RESTful API endpoints for CRUD operations on tasks.
+
+**Steps:**
+
+- **Identify Key Actions:** Determine the CRUD operations needed: Create, Read, Update, Delete for tasks.
+- **Define Routes:**
+    - POST `/tasks` - Create a new task
+    - GET `/tasks` - Retrieve all tasks
+    - GET `/tasks/:id` - Retrieve a specific task by ID
+    - PUT `/tasks/:id` - Update a specific task by ID
+    - DELETE `/tasks/:id` - Delete a specific task by ID
+- **Specify JSON Body and Responses:** Detail the JSON format for requests (what to send) and responses (what to expect back).
+- **Document Authentication Requirements:** Note which endpoints require user authentication.
+
+**Tools:** Use tools like Swagger or Postman for documenting these API endpoints.
+
+2. Database Schema
+Objective: Design a database schema for task management.
+Steps:
+Define Tables:
+Tasks table with columns: id (primary key), title, description, status, assignee_id, created_at, updated_at.
+Users table for handling authentication with columns: id, username, password_hash.
+Relationships: Link Users to Tasks through assignee_id to show which user is responsible for a task.
+Write SQL Scripts: Create SQL scripts to set up these tables. For SQLite, use:
+CREATE TABLE Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password_hash TEXT);
+
+CREATE TABLE Tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, status TEXT, assignee_id INTEGER, created_at DATETIME, updated_at DATETIME, FOREIGN KEY(assignee_id) REFERENCES Users(id));
+
+### 3. Backend Logic
+
+**Objective:** Implement business logic for task management.
+
+**Steps:**
+
+- **Set Up Node.js Project:** Initialize a Node.js project with `npm init`.
+- **Install Dependencies:** Use `npm install express sqlite3 body-parser`.
+- **Implement Endpoints:** Use Express.js to setup routes that correspond to your API design.
+    - For each route, connect to the SQLite database and execute the appropriate SQL query.
+- **Error Handling:** Ensure your API handles errors gracefully and returns appropriate error messages.
+
+### 4. Authentication and Authorization
+
+**Objective:** Secure the API using authentication and role-based access control.
+
+**Steps:**
+
+- **Implement User Authentication:** Use JSON Web Tokens (JWT) for authentication.
+    - Install JWT library: `npm install jsonwebtoken`.
+    - Create login and register endpoints that handle token creation and user authentication.
+- **Role-Based Access Control:** Implement middleware that checks if the authenticated user has the correct permissions to perform certain actions.
+
+### 5. Testing and Debugging (Optional)
+
+**Objective:** Write tests and debug the backend.
+
+**Steps:**
+
+- **Unit Testing:** Use a testing framework like Jest.
+    - Install Jest: `npm install --save-dev jest`.
+    - Write tests for each API endpoint to ensure they perform as expected.
+- **Integration Testing:** Test the integration of your API with the frontend.
+- **Debugging:** Use console logs and Node.js debugging tools to trace and fix issues.
